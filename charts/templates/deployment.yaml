@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: sae-apiserver-proxy
+spec:
+  replicas: {{ .Values.replicas }}
+  selector:
+    matchLabels:
+      app: sae-apiserver-proxy
+  template:
+    metadata:
+      labels:
+        app: sae-apiserver-proxy
+    spec:
+      serviceAccountName: {{ .Release.Name }}
+      containers:
+        - name: {{ .Release.Name }}
+          args:
+            - "sae-apiserver-proxy"
+            - "--secure-port={{ .Values.port }}"
+            - "--feature-gates=APIPriorityAndFairness=false"
+            - "--storage-namespace={{ .Release.Namespace }}"
+            {{ if eq .Values.serverAddress "" }}
+            - "--server-address=https://{{ .Release.Name }}.{{ .Release.Namespace }}:{{ .Values.port }}"
+            {{ else }}
+            - "--server-address={{ .Values.serverAddress }}"
+            {{ end }}
+          image: {{ .Values.image.registry }}{{ .Values.image.repository }}:{{ .Values.image.tag }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          resources:
+          {{- toYaml .Values.resources | nindent 12 }}
+          ports:
+            - containerPort: {{ .Values.port }}

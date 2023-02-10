@@ -1,0 +1,16 @@
+replicas: 1
+
+port: 9443
+
+image:
+  registry: ""
+  repository: kubevelacontrib/sae-apiserver-proxy
+  tag: latest
+  pullPolicy: Always
+
+resources:
+  limits:
+    cpu: 100m
+    memory: 200Mi
+
+serverAddress: ""

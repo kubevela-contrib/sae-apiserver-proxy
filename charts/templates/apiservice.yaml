@@ -1,0 +1,16 @@
+apiVersion: apiregistration.k8s.io/v1
+kind: APIService
+metadata:
+  name: v1alpha1.sae.alibaba-cloud.oam.dev
+  labels:
+    app: sae-apiserver-proxy
+spec:
+  version: v1alpha1
+  group: sae.alibaba-cloud.oam.dev
+  groupPriorityMinimum: 2000
+  service:
+    name: {{ .Release.Name }}
+    namespace: {{ .Release.Namespace }}
+    port: {{ .Values.port }}
+  versionPriority: 10
+  insecureSkipTLSVerify: true
